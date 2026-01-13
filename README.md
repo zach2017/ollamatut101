@@ -1,6 +1,4 @@
 # ollamatut101
-Below is an **updated, expanded, and more practical version** of your notes, with **additional references** and a **simple “LEGO-style code generation example”** using **Ollama + ChromaDB** to assemble a small **web app (form + DB)** from reusable Python snippet components.
-
 ---
 
 # Ollama Use Cases & Examples with ChromaDB and LangChain (Updated)
