@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>LangChain Code Gen</title>
+</head>
+<body class="bg-gray-900 text-white p-10">
+    <div class="max-w-2xl mx-auto space-y-6">
+        <h1 class="text-4xl font-extrabold text-blue-500">AI Code Architect</h1>
+        <p class="text-gray-400">Generates code based on your local HTML templates.</p>
+        
+        <input id="user_prompt" type="text" placeholder="e.g. Create a login route" 
+               class="w-full p-4 rounded bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none">
+        
+        <button onclick="getCode()" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded font-bold">
+            Generate Code
+        </button>
+
+        <div class="bg-black p-6 rounded-lg border border-gray-800 min-h-[100px]">
+            <pre id="output" class="text-green-400 font-mono text-sm whitespace-pre-wrap">Output will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        async function getCode() {
+            const prompt = document.getElementById('user_prompt').value;
+            const output = document.getElementById('output');
+            output.innerText = "Processing...";
+            
+            const res = await fetch(`/generate?user_input=${encodeURIComponent(prompt)}`);
+            const data = await res.json();
+            output.innerText = data.code;
+        }
+    </script>
+</body>
+</html>

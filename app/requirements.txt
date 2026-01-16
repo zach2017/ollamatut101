@@ -1,0 +1,19 @@
+# Web Server
+fastapi
+uvicorn[standard]
+jinja2
+
+# LangChain Core and Community
+langchain
+langchain-community
+langchain-core
+
+# LangChain Integrations
+langchain-ollama
+langchain-chroma
+
+
+# Vector Database and Utilities
+chromadb
+beautifulsoup4
+python-multipart

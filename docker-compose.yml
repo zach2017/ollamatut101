@@ -25,6 +25,21 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
 
+  backend:
+    build: ./app
+    container_name: langchain_app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/app
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+      - chromadb
+
 volumes:
   ollama_storage:
   chroma_data:
