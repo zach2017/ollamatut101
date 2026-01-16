@@ -15,5 +15,16 @@ services:
       ollama create fastapi-gen -f /root/Modelfile;
       wait"
 
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+
 volumes:
   ollama_storage:
+  chroma_data:
