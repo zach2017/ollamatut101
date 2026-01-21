@@ -26,16 +26,17 @@ services:
       - IS_PERSISTENT=TRUE
 
   backend:
-    build: ./app
-    container_name: langchain_app
+    build: ./onedemo
+    container_name: one_app
     ports:
-      - "8080:8080"
+      - "8787:8080"
     volumes:
-      - ./app:/app
+      - ./onedemo:/app
     environment:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
       - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_HOST=http://ollama:11434
     depends_on:
       - ollama
       - chromadb
