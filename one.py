@@ -3,13 +3,16 @@ import chromadb
 import ollama
 
 # --- Configuration ---
-CHROMA_PATH = "code_db_mistral"
+# Use HttpClient to connect to your ChromaDB server on port 8000
+CHROMA_HOST = "localhost" 
+CHROMA_PORT = 8000
 COLLECTION_NAME = "mistral_codebase"
 EMBED_MODEL = "nomic-embed-text"
 LLM_MODEL = "mistral"
-CHUNK_SIZE = 1500  # Characters per chunk (adjust as needed)
+CHUNK_SIZE = 1500  
 
-client = chromadb.PersistentClient(path=CHROMA_PATH)
+# Initialize the Remote Client
+client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 collection = client.get_or_create_collection(name=COLLECTION_NAME)
 
 def get_chunks(text, size):
@@ -17,6 +20,7 @@ def get_chunks(text, size):
     return [text[i:i + size] for i in range(0, len(text), size)]
 
 def index_code(directory):
+    # Added 'code_db_mistral' to ignored_dirs just in case local files exist
     ignored_dirs = {'.git', 'venv', '__pycache__', 'code_db_mistral'}
     
     for root, dirs, files in os.walk(directory):
@@ -31,16 +35,15 @@ def index_code(directory):
                     with open(path, "r", encoding="utf-8") as f:
                         content = f.read()
                     
-                    # Split large files into manageable chunks
                     chunks = get_chunks(content, CHUNK_SIZE)
                     
                     for i, chunk in enumerate(chunks):
-                        # Generate unique ID for each chunk
                         chunk_id = f"{path}_chunk_{i}"
                         
                         # Get embedding from Ollama
                         response = ollama.embeddings(model=EMBED_MODEL, prompt=chunk)
                         
+                        # Add to the remote collection
                         collection.add(
                             ids=[chunk_id],
                             embeddings=[response["embedding"]],
@@ -53,10 +56,9 @@ def index_code(directory):
 def query_code(user_query):
     query_embed = ollama.embeddings(model=EMBED_MODEL, prompt=user_query)["embedding"]
     
-    # Query for the top 3 most relevant chunks
+    # Query the remote server for the top 3 most relevant chunks
     results = collection.query(query_embeddings=[query_embed], n_results=3)
     
-    # Combine the found snippets into one context block
     context = "\n---\n".join(results["documents"][0])
     
     prompt = f"[INST] Use the code snippets below to answer: {user_query}\n\nContext:\n{context} [/INST]"
@@ -65,7 +67,7 @@ def query_code(user_query):
     return response["response"]
 
 if __name__ == "__main__":
-    # Index current directory
+    # Index current directory to the remote DB
     index_code("./")
     
     # Test a query
